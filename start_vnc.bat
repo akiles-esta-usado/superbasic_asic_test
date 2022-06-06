@@ -11,8 +11,8 @@ IF "%DESIGNS%"=="" (
 echo Using/creating designs directory: %DESIGNS%
 if not exist "%DESIGNS%" mkdir "%DESIGNS%" 
 
-IF "%DOCKER_USER%"=="" SET DOCKER_USER=akilesalreadytaken
-IF "%DOCKER_IMAGE%"=="" SET DOCKER_IMAGE=iic-osic-tools-analog
+IF "%DOCKER_USER%"=="" SET DOCKER_USER=hpretl
+IF "%DOCKER_IMAGE%"=="" SET DOCKER_IMAGE=iic-osic-tools
 IF "%DOCKER_TAG%"=="" SET DOCKER_TAG=latest
 
 IF "%CONTAINER_USER%"=="" SET CONTAINER_USER=1000

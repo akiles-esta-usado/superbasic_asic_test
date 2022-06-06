@@ -13,11 +13,11 @@ if [ -z ${DESIGNS+z} ]; then
 fi
 
 if [ -z ${DOCKER_USER+z} ]; then
-	DOCKER_USER="akilesalreadytaken"
+	DOCKER_USER="hpretl"
 fi
 
 if [ -z ${DOCKER_IMAGE+z} ]; then
-	DOCKER_IMAGE="iic-osic-tools-analog"
+	DOCKER_IMAGE="iic-osic-tools"
 fi
 
 if [ -z ${DOCKER_TAG+z} ]; then
