@@ -12,16 +12,7 @@ if [ -z ${DESIGNS+z} ]; then
 	if [ ! -d "$DESIGNS" ]; then
 		${ECHO_IF_DRY_RUN} mkdir -p "$DESIGNS"
 	fi
-
 	echo "Design directory auto-set to $DESIGNS"
-fi
-
-# Set the host ports, disable with 0. Only used if not set as a shell variables!
-if [ -z ${WEBSERVER_PORT+z} ]; then
-	WEBSERVER_PORT=80
-fi
-if [ -z ${VNC_PORT+z} ]; then
-	VNC_PORT=5901
 fi
 
 if [ -z ${DOCKER_USER+z} ]; then
@@ -36,28 +27,26 @@ if [ -z ${DOCKER_TAG+z} ]; then
 	DOCKER_TAG="latest"
 fi
 
+# Shell starts as root per default.
 if [ -z ${CONTAINER_USER+z} ]; then
-	CONTAINER_USER=$(id -u)
+	CONTAINER_USER="0"
 fi
 
 if [ -z ${CONTAINER_GROUP+z} ]; then
-	CONTAINER_GROUP=$(id -g)
+	CONTAINER_GROUP="0"
 fi
 
-# Processing ports
-PORT_PARAMS=""
-if [ $WEBSERVER_PORT -gt 0 ]; then
-	PORT_PARAMS="$PORT_PARAMS -p $WEBSERVER_PORT:80"
-fi
-if [ $VNC_PORT -gt 0 ]; then
-	PORT_PARAMS="$PORT_PARAMS -p $VNC_PORT:5901"
+if [ -z ${CONTAINER_NAME+z} ]; then
+	CONTAINER_NAME="iic_osic_tools_shell"
 fi
 
-#shellcheck disable=SC2086
-${ECHO_IF_DRY_RUN} docker run \
-	-d \
-	--rm \
-	--user "${CONTAINER_USER}:${CONTAINER_GROUP}" \
-	$PORT_PARAMS \
-	-v "$DESIGNS:/foss/designs:rw" \
-	${DOCKER_USER}/${DOCKER_IMAGE}:${DOCKER_TAG}
+# Finally, run the container, sets DISPLAY to the local display number
+# shellcheck disable=SC2086
+if [ "$(docker ps -aq -f name=${CONTAINER_NAME})" ]; then
+	echo "Container exists, restarting existing container..."
+	${ECHO_IF_DRY_RUN} docker start -a -i ${CONTAINER_NAME}
+else
+	echo "No container exists, creating new one..."
+	${ECHO_IF_DRY_RUN} docker run -it --name "${CONTAINER_NAME}" --user "${CONTAINER_USER}:${CONTAINER_GROUP}" -e "DISPLAY=${DISP}" -v "${DESIGNS}:/foss/designs:rw" ${DOCKER_USER}/${DOCKER_IMAGE}:${DOCKER_TAG} -s /bin/bash
+fi
+
